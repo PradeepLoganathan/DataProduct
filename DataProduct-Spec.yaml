@@ -1,0 +1,41 @@
+apiVersion: thetalentbot.com.datamesh/v1beta1
+kind: DataProduct
+metadata: 
+  name: abandoned-cart-data-product
+  namespace: cart-data
+tags:
+  - cart
+  - abandoned-carts
+spec:
+  name: Abandoned Cart Data Product
+  description: Data product to track abandoned carts in an e-commerce domain
+  owner: cart-team
+  inputPorts:
+    - name: cart-database
+      description: MySQL database containing cart data
+      type: database
+      details:
+        databaseType: mysql
+        host: mysql-host
+        port: 3306
+        databaseName: cart-db
+  outputPorts:
+    - name: abandonedCart-Stream
+      description: Processed abandoned cart data sent to a Kafka topic
+      type: stream
+      details:
+        kafkaTopic: abandoned_cart_processed
+        kafkaBrokers: kafka-cluster:9092
+        kafkaProperties:
+          acks: "all"
+          compression.type: gzip
+    - name: ml-model
+      description: ML model for predicting cart abandonment
+      type: artifact
+      details:
+        modelPath: s3://your-model-bucket/abandonment_model.pkl
+        modelType: sklearn
+        inputFeatures:
+          - productId
+          - quantity
+          - price
